@@ -1,6 +1,6 @@
-package road_map.osm_processing;
+package controller.osm_processing;
 
-import static road_map.RoadMapHandler.inBound;
+//import static RoadMapHandler.inBound;
 //import static utils.logs.LogHandler.LOGGER;
 
 import org.openstreetmap.osmosis.core.container.v0_6.*;
@@ -8,6 +8,8 @@ import org.openstreetmap.osmosis.core.domain.v0_6.*;
 import org.openstreetmap.osmosis.core.task.v0_6.Sink;
 
 import java.util.*;
+
+import static controller.RoadMapHandler.inBound;
 
 /**
  *      |==================================|

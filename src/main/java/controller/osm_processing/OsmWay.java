@@ -1,7 +1,7 @@
-package road_map.osm_processing;
+package controller.osm_processing;
 
-import road_map.model.utils.Coordinates;
-import road_map.model.utils.Located;
+import model.utils.Coordinates;
+import model.utils.Located;
 import org.openstreetmap.osmosis.core.domain.v0_6.Tag;
 
 import java.util.*;

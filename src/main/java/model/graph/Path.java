@@ -1,4 +1,4 @@
-package road_map.model.graph;
+package model.graph;
 
 import java.util.ArrayList;
 import java.util.Iterator;

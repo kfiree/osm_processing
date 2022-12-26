@@ -1,10 +1,10 @@
-package road_map.model.graph;
+package model.graph;
 
-import road_map.model.utils.EdgeOperation;
-import road_map.model.utils.NodeOperation;
-import road_map.osm_processing.OsmObject;
-import road_map.osm_processing.OsmWay;
-import road_map.model.utils.Coordinates;
+import model.utils.EdgeOperation;
+import model.utils.NodeOperation;
+import controller.osm_processing.OsmObject;
+import controller.osm_processing.OsmWay;
+import model.utils.Coordinates;
 //import utils.DS.EdgeOperation;
 //import utils.DS.NodeOperation;
 
@@ -16,16 +16,16 @@ import java.util.stream.Collectors;
 //import static utils.logs.LogHandler.LOGGER;
 
 /**
- *      |==================================|
- *      |==========| Road MAP  |=========|
- *      |==================================|
+ * |==================================|
+ * |==========| Road MAP  |=========|
+ * |==================================|
+ * <p>
+ * <p>
+ * graph representing map of a region
  *
- *
- *      graph representing map of a region
- *
- * @author  Kfir Ettinger
+ * @author Kfir Ettinger
  * @version 1.0
- * @since   2021-06-20
+ * @since 2021-06-20
  */
 public class RoadMap {
     private final ReentrantLock edgeLock, nodeLock;
@@ -34,15 +34,19 @@ public class RoadMap {
     private final Map<Long, Node> nodes;
     protected static AtomicInteger keyGenerator = new AtomicInteger(-1);
 
-    /** CONSTRUCTORS */
-    private RoadMap(){
+    /**
+     * CONSTRUCTORS
+     */
+    private RoadMap() {
         edges = new HashSet<>();
         nodes = new HashMap<>();
         edgeLock = new ReentrantLock();
         nodeLock = new ReentrantLock();
     }
 
-    /**  Singleton specific properties */
+    /**
+     * Singleton specific properties
+     */
     public static final RoadMap INSTANCE = new RoadMap();
 
 
@@ -53,44 +57,49 @@ public class RoadMap {
         return name;
     }
 
-    public Node getNode(long key){ return nodes.get(key); }
+    public Node getNode(long key) {
+        return nodes.get(key);
+    }
 
-    public Collection<Node> getNodes(){
+    public Collection<Node> getNodes() {
         return Collections.unmodifiableCollection(nodes.values());
     }
 
-    public void nodesOperation(NodeOperation op){
+    public Map<Long, Node> getNodesMap() {
+        return nodes;
+    }
+
+    public void nodesOperation(NodeOperation op) {
         nodes.values().forEach(op::operate);
     }
-    public void edgesOperation(EdgeOperation op){
+
+    public void edgesOperation(EdgeOperation op) {
         edgeLock.lock();
         edges.forEach(op::operate);
         edgeLock.unlock();
     }
-//    private Collection<Edge> getEdges() {
-//        return Collections.unmodifiableCollection(edges);
-//    }
 
-    public int edgesSize(){ return nodes.size(); }
-
-    public int nodesSize(){ return edges.size(); }
 
 
 
     /*     SETTERS     */
 
-    public void setName(String name)  {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setEdges(Collection<Edge> edges) { this.edges.addAll(edges); }
+    public void setEdges(Collection<Edge> edges) {
+        this.edges.addAll(edges);
+    }
 
-    /** add edge from Parser */
-    public void addEdge(Node src, Node dst, OsmWay way){
+    /**
+     * add edge from Parser
+     */
+    public void addEdge(Node src, Node dst, OsmWay way) {
         edgeLock.lock();
         Edge edge = setEdgeIfExists(src, dst);
 
-        if(edge == null){
+        if (edge == null) {
             edge = new Edge(way, src, dst);
             src.addEdge(edge);
             edges.add(edge);
@@ -100,13 +109,15 @@ public class RoadMap {
 
     }
 
-    /** add edge from DB */
+    /**
+     * add edge from DB
+     */
     public void addEdge(Long id, Long startNodeId, Long endNodeID, long weight, String highwayType) {
         Node src = getNode(startNodeId), dst = getNode(endNodeID);
 
         Edge edge = setEdgeIfExists(src, dst);
 
-        if(edge == null){
+        if (edge == null) {
             edge = new Edge(id, src, dst, weight, highwayType);
             src.addEdge(edge);
             edges.add(edge);
@@ -114,17 +125,17 @@ public class RoadMap {
 
     }
 
-    private Edge setEdgeIfExists(Node src, Node dst){
+    private Edge setEdgeIfExists(Node src, Node dst) {
         boolean srcToDst = src.isAdjacent(dst);
         boolean dstToSrc = dst.isAdjacent(src);
 
         Edge edge = null;
 
         if (srcToDst || dstToSrc) {
-            if(!srcToDst){ // opposite edge exist
+            if (!srcToDst) { // opposite edge exist
                 edge = dst.getEdgeTo(src);
                 src.addEdge(edge);
-            }else{
+            } else {
                 edge = src.getEdgeTo(dst);
             }
         }
@@ -132,11 +143,13 @@ public class RoadMap {
         return edge;
     }
 
-    /** add edge from Parser */
-    public Node addNode(OsmObject osmObject){
+    /**
+     * add edge from Parser
+     */
+    public Node addNode(OsmObject osmObject) {
         Node node = getNode(osmObject.getID());
 
-        if( node == null){
+        if (node == null) {
             node = new Node(osmObject);
             nodes.put(osmObject.getID(), node);
         }
@@ -144,11 +157,13 @@ public class RoadMap {
         return node;
     }
 
-    /** add edge from DB */
-    public void addNode(Long osmID, Double latitude, Double longitude){
+    /**
+     * add edge from DB
+     */
+    public void addNode(Long osmID, Double latitude, Double longitude) {
         Node node = getNode(osmID);
 
-        if( node == null){
+        if (node == null) {
             node = new Node(osmID, new Coordinates(latitude, longitude));
             nodes.put(node.getId(), node);
         }
@@ -159,10 +174,10 @@ public class RoadMap {
 
     /* REMOVE FROM GRAPH */
 
-    public Node removeNode(long id){ //TODO uncheck
+    public Node removeNode(long id) { //TODO uncheck
         Node node = this.nodes.remove(id);
 
-        node.getEdges().forEach(edge ->{
+        node.getEdges().forEach(edge -> {
             Node otherEnd = edge.getOtherEnd(node.getId());
             otherEnd.removeEdgeTo(node);
             edges.remove(edge);
@@ -171,21 +186,32 @@ public class RoadMap {
         return nodes.remove(id);
     }
 
-    public void removeNodes(List<Node> nodesToRemove){
+    public void removeNodes(List<Node> nodesToRemove) {
         List<Edge> edgesToRemove = new ArrayList<>();
 
-        for(Node node:nodesToRemove) {
-            for (Edge edge : node.getEdges()) {
+        Iterator<Node> nodeItr = nodesToRemove.iterator();
+        while(nodeItr.hasNext()){
+            Node node = nodeItr.next();
+            Iterator<Edge> edgeItr = node.getEdges().iterator();
+            while(edgeItr.hasNext()){
+                Edge edge = edgeItr.next();
                 edge.getOtherEnd(node.getId()).removeEdgeTo(node);
+//                edgeItr.remove();
                 edgesToRemove.add(edge);
             }
+
         }
-
-        nodes.entrySet().removeIf(e->nodesToRemove.contains(e.getValue()));
-
-
-
+//        for (Node node : nodesToRemove) {
+//            for (Edge edge : node.getEdges()) {
+//                edge.getOtherEnd(node.getId()).removeEdgeTo(node);
+//                edgesToRemove.add(edge);
+//            }
+//        }
+        nodesToRemove.forEach(node -> nodes.remove(node.getId()));
         edgesToRemove.forEach(edges::remove);
+
+//        nodes.entrySet().removeIf(e -> nodesToRemove.contains(e.getValue()));
+
 
         /*
             TODO:
@@ -198,26 +224,27 @@ public class RoadMap {
 
     }
 
-    public void removeAllNodesBut(List<Node> nodesToKeep){
+    public void removeAllNodesBut(HashSet<Long> nodesToKeep) {
         List<Node> nodesToRemove = nodes.values().stream()
-                .filter(node -> !nodesToKeep.contains(node))
-                .collect(Collectors.toList());
+                .filter(node -> !nodesToKeep.contains(node.getId())).toList();
+
+
+//        for(Node node : nodes.values()){
+//            if(!nodesToKeep.contains(node.getId())){
+//                removeNode(node.getId());
+//            }
+//        }
 
 //        LogHandler.LOGGER.info(nodesToRemove.size() + " nodes that are not part of main component are found and being removed.");
-
         removeNodes(nodesToRemove);
     }
 
-    public boolean removeEdge(Edge edge){
+    public boolean removeEdge(Edge edge) {
         edge.getNode2().removeEdge(edge);
         edge.getNode1().removeEdge(edge);
         return edges.remove(edge);
     }
 
-
-
-    public static void unlockEdges(){}
-    public static void unlockNode(){}
     @Override
     public String toString() {
         return "RoadMap{" +

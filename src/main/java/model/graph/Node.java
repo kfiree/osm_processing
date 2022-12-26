@@ -1,10 +1,11 @@
-package road_map.model.graph;
+package model.graph;
 
-import road_map.RoadMapHandler;
-import road_map.model.utils.Coordinates;
-import road_map.model.utils.Located;
+import controller.RoadMapHandler;
+import model.utils.Coordinates;
+import model.utils.Located;
 import org.jetbrains.annotations.NotNull;
-import road_map.osm_processing.OsmObject;
+//import controller.osm_processing.OsmObject;
+import controller.osm_processing.OsmObject;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -135,7 +136,11 @@ public class Node implements Comparable<Node>, Located {
     @Override
     public boolean equals(Object o) {
         if(o instanceof Node node){
-            return node.getLatitude().equals(coordinates.getLatitude()) && node.getLongitude().equals(coordinates.getLongitude());
+            if(node == this){
+                return true;
+            }else {
+                return node.getLatitude().equals(coordinates.getLatitude()) && node.getLongitude().equals(coordinates.getLongitude());
+            }
         }
         return false;
     }

@@ -1,6 +1,6 @@
-package road_map.model.utils;
+package model.utils;
 
-import road_map.model.graph.Node;
+import model.graph.Node;
 
 @FunctionalInterface
 public interface NodeOperation {

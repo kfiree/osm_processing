@@ -1,8 +1,8 @@
-package road_map.model.utils;
+package model.utils;
 
 //import simulator.model.utils.GraphAlgo;
-import road_map.RoadMapHandler;
-import road_map.SimulatorUtils;
+import controller.RoadMapHandler;
+import controller.SimulatorUtils;
 
 public interface Located {
 

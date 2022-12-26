@@ -1,9 +1,9 @@
-package road_map.model.graph;
+package model.graph;
 
-import road_map.SimulatorUtils;
-import road_map.osm_processing.OsmWay;
-import road_map.model.utils.Coordinates;
-import road_map.model.utils.Located;
+import controller.SimulatorUtils;
+import controller.osm_processing.OsmWay;
+import model.utils.Coordinates;
+import model.utils.Located;
 
 import java.util.Hashtable;
 

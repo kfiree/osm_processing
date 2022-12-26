@@ -1,8 +1,8 @@
-package road_map.osm_processing;
+package controller.osm_processing;
 
-import road_map.RoadMapHandler;
-import road_map.model.utils.Coordinates;
-import road_map.model.utils.Located;
+import controller.RoadMapHandler;
+import model.utils.Coordinates;
+import model.utils.Located;
 import org.openstreetmap.osmosis.core.domain.v0_6.Node;
 import org.openstreetmap.osmosis.core.domain.v0_6.Tag;
 
@@ -11,22 +11,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *      |==================================|
- *      |==========| MAP OBJECT |==========|
- *      |==================================|
- *
+ * |==================================|
+ * |==========| MAP OBJECT |==========|
+ * |==================================|
+ * <p>
  * create map object for each Node:
- *      - GeoLocation coordinates := (latitude, longitude)
- *      - Long id := osm id
- *      - Map tags := all objects tags
- *      - int linkCounter := count appearances of object in osm ways.
- *                          if linkCounter greater than 1 node will be a crosses or entities of class Node
+ * - GeoLocation coordinates := (latitude, longitude)
+ * - Long id := osm id
+ * - Map tags := all objects tags
+ * - int linkCounter := count appearances of object in osm ways.
+ * if linkCounter greater than 1 node will be a crosses or entities of class Node
  *
- * @author  Kfir Ettinger
+ * @author Kfir Ettinger
  * @version 1.0
- * @since   2021-06-20
+ * @since 2021-06-20
  */
-public class OsmObject  implements Located {
+public class OsmObject implements Located {
 
     private Coordinates coordinates;
     private final long id;
@@ -34,7 +34,7 @@ public class OsmObject  implements Located {
     private int linkCounter;
 
     /* CONSTRUCTORS */
-    public OsmObject(Node osmNode){
+    public OsmObject(Node osmNode) {
         coordinates = new Coordinates(osmNode.getLatitude(), osmNode.getLongitude());
         id = osmNode.getId();
         addAllTags(osmNode.getTags());
@@ -68,17 +68,17 @@ public class OsmObject  implements Located {
 
     public void addAllTags(Collection<Tag> tags) {
         if (!tags.isEmpty()) {
-            for(Tag tag: tags) {
+            for (Tag tag : tags) {
                 this.tags.put(tag.getKey(), tag.getValue());
             }
         }
     }
 
-    public boolean isPartOfAnotherWay(){
+    public boolean isPartOfAnotherWay() {
         return linkCounter > 1;
     }
 
     public void incrementCounter() {
-        linkCounter ++;
+        linkCounter++;
     }
 }

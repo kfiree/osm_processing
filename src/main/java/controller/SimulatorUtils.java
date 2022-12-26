@@ -1,13 +1,10 @@
-package road_map;
+package controller;
 
-import road_map.model.graph.Node;
-import road_map.model.graph.RoadMap;
-import road_map.model.utils.Coordinates;
+import model.graph.Node;
+import model.graph.RoadMap;
+import model.utils.Coordinates;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class SimulatorUtils {
     public static long hourToMS(double hour){
@@ -18,51 +15,56 @@ public class SimulatorUtils {
      * delete from graph all nodes that aren't part of the largest connected component.
      */
     public static void extractLargestCC(){
-        RoadMap.INSTANCE.removeAllNodesBut(getLargestCC());
+        HashSet<Long> largestCC = getLargestCC();
+        RoadMap.INSTANCE.removeAllNodesBut(largestCC);
     }
 
-    private static List<Node> getLargestCC(){
-        List<Node> nodes = new ArrayList<>(RoadMap.INSTANCE.getNodes());
+    private static Node pop(HashSet<Node> nodes){
+        Iterator<Node> itr = nodes.iterator();
+        Node node = itr.next();
+        itr.remove();
+        return node;
+    }
+    private static HashSet<Long> getLargestCC(){
+        HashSet<Node> nodes = new HashSet<>(RoadMap.INSTANCE.getNodes());
+//        Map<Long, Node> nodesMap = new HashMap<>(RoadMap.INSTANCE.getNodesMap());
+        Node componentNode = pop(nodes);
+        HashSet<Long> largestCC = getCC(componentNode, nodes);
 
-        Node componentNode = nodes.remove(0);
-        List<Node> largestCC = getCC(componentNode, nodes);
+        nodes.removeAll(largestCC);
 
         while(!nodes.isEmpty() && nodes.size() > largestCC.size()){
-            componentNode = nodes.remove(0);
-            List<Node> CC = getCC(componentNode, nodes);
+            componentNode = pop(nodes);
+            HashSet<Long> CC = getCC(componentNode, nodes);
             if(CC.size() > largestCC.size()){
                 largestCC = CC;
             }
+            nodes.removeAll(CC);
         }
 
         return largestCC;
     }
 
-    private static List<Node> getCC(Node node, List<Node> nodes){
-        // Mark all the vertices as not visited(By default
-        // set as false)
-        HashSet<Node> visited = new HashSet<>();
-
-        // Create a queue for BFS
+    private static HashSet<Long> getCC(Node node, HashSet<Node> nodes){
+        HashSet<Long> visited = new HashSet<>();
         LinkedList<Node> queue = new LinkedList<>();
 
-        // Mark the current node as visited and enqueue it
         queue.add(node);
 
         while (queue.size() != 0)
         {
-            // Dequeue a vertex from queue and print it
             node = queue.poll();
-            for(Node n : node.getAdjacentNodes()){
-                if(!visited.contains(n)){
-                    queue.add(n);
-                    visited.add(n);
-                    nodes.remove(n);
+            for(Node adjacent : Objects.requireNonNull(node).getAdjacentNodes()){
+                if(!visited.contains(adjacent.getId())){
+                    queue.add(adjacent);
+                    visited.add(adjacent.getId());
+                    nodes.remove(adjacent);
                 }
             }
         }
 //        LOGGER.fine("BFS from node "+ node.getId());
-        return visited.stream().toList();
+
+        return visited;
     }
 
     public static double distance(Coordinates location1, Coordinates location2){

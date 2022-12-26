@@ -1,6 +1,6 @@
-package road_map.model.utils;
+package model.utils;
 
-import road_map.model.graph.Edge;
+import model.graph.Edge;
 
 @FunctionalInterface
 public interface EdgeOperation {

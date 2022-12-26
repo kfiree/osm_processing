@@ -1,4 +1,4 @@
-package road_map.model.utils;
+package model.utils;
 
 import java.awt.geom.Point2D;
 

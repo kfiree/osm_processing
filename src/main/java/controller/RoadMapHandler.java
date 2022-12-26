@@ -1,8 +1,9 @@
-package road_map;
+package controller;
 
-import road_map.model.utils.Coordinates;
-import road_map.osm_processing.Parser;
-import road_map.osm_processing.Reader;
+import model.graph.RoadMap;
+import model.utils.Coordinates;
+import controller.osm_processing.Parser;
+import controller.osm_processing.Reader;
 
 import crosby.binary.osmosis.OsmosisReader;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,8 @@ import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+
+import static controller.SimulatorUtils.extractLargestCC;
 
 //import static simulator.model.utils.GraphAlgo.extractLargestCC;
 //import static utils.logs.LogHandler.LOGGER;
@@ -94,7 +97,7 @@ public final class RoadMapHandler {
         return inBound(location.getLongitude(), location.getLatitude());
     }
 
-    public static boolean inBound(double longitude, double latitude ){
+    public static boolean inBound(double longitude, double latitude){
         if(!bound) {
             return true;
         }
@@ -139,8 +142,7 @@ public final class RoadMapHandler {
             parser.parseMapWays(reader.getWays());
 
             // clean road map
-//            GraphAlgo.extractLargestCC();
-//            GraphAlgo.removeNodesThatNotConnectedTo(RoadMap.INSTANCE.getNode(2432701015L));
+            extractLargestCC();
 
         } catch (FileNotFoundException e) {
 //            LogHandler.LOGGER.severe("File not found!, "+e.getMessage());
@@ -149,9 +151,5 @@ public final class RoadMapHandler {
 
             System.exit(0);
         }
-    }
-
-    public static void main(String[] args) {
-
     }
 }

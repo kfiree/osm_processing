@@ -1,7 +1,7 @@
-package road_map.osm_processing;
+package controller.osm_processing;
 
-import road_map.model.graph.Node;
-import road_map.model.graph.RoadMap;
+import model.graph.Node;
+import model.graph.RoadMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
